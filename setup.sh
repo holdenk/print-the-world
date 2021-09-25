@@ -1,9 +1,13 @@
 #!/bin/bash
 set -ex
-if ! command -v python &> /dev/null
+if ! command -v python3 &> /dev/null
 then
-  sudo apt-get install -y python
+  sudo apt-get install -y python3 
 fi
+if ! command -v pip3 &> /dev/null
+then
+  sudo apt-get install -y python3-pip
+fi 
 if ! command -v npm &> /dev/null
 then
   curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
@@ -32,4 +36,9 @@ if [ ! -d grid-apps ]; then
 fi
 sudo make install
 popd
-pip install -U -r requirements.txt
+# Lets also install slic3r
+if ! command -v slic3r &> /dev/null
+then
+  sudo apt-get install -y slic3r
+fi
+pip3 install -U -r requirements.txt
