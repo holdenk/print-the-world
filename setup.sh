@@ -42,7 +42,7 @@ then
   sudo apt-get install -y slic3r
 fi
 # Lets also install print3r
-if ! command -v slic3r &> /dev/null
+if ! command -v print3r &> /dev/null
 then
   sudo apt-get install -y print3r
 fi
