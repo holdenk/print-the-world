@@ -10,15 +10,15 @@ then
   sudo apt-get install -y nodejs
 fi
 # Install ctmconv (oldskool not so happy with obj)
-if ! command -v ctmconv &> /dev/null
-then
-  sudo apt-get install -y openctm-tools
-fi
+#if ! command -v ctmconv &> /dev/null
+#then
+#  sudo apt-get install -y openctm-tools
+#fi
 # Install meshlab
-if ! command -v meshlab &> /dev/null
-then
-  sudo apt-get install -y openctm-tools
-fi
+#if ! command -v meshlab &> /dev/null
+#then
+#  sudo snap install meshlab
+#fi
 # Update npm
 sudo npm install -g npm
 if [ ! -d KiriMotoSlicer ]; then
