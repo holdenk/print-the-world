@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 # Other projects we check out
 KiriMotoSlicer/*
+KiriMotoSlicer
