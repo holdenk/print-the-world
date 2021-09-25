@@ -34,7 +34,7 @@ if [ ! -d grid-apps ]; then
   # May fail because doesnt go to the right place.
   #make requirements
   git clone https://github.com/holdenk/grid-apps.git
-  cd grid-apps && npm i
+  cd grid-apps && npm i && cd ..
 fi
 # Slice command kirimoto-slicer x3d-cm-interior-graffiti-uvs.obj.stl --deviceName="Creality.CR-30"
 sudo make install
