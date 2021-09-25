@@ -1,2 +1,2 @@
 # print-the-world
-I (attempt to) print everything* from thingiverse
+I (attempt to) print everything* from places.
