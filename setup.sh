@@ -12,6 +12,8 @@ if ! command -v npm &> /dev/null
 then
   curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
   sudo apt-get install -y nodejs
+  # Update npm
+  sudo npm install -g npm
 fi
 # Install ctmconv (oldskool not so happy with obj)
 #if ! command -v ctmconv &> /dev/null
@@ -23,17 +25,18 @@ fi
 #then
 #  sudo snap install meshlab
 #fi
-# Update npm
-sudo npm install -g npm
 if [ ! -d KiriMotoSlicer ]; then
-  git clone https://github.com/Spiritdude/KiriMotoSlicer
+  git clone https://github.com/holdenk/KiriMotoSlicer.git
 fi
 pushd KiriMotoSlicer
 # Make requirements isn't idempotent :/
 if [ ! -d grid-apps ]; then
   # May fail because doesnt go to the right place.
-  make requirements
+  #make requirements
+  git clone https://github.com/holdenk/grid-apps.git
+  cd grid-apps && npm i
 fi
+# Slice command kirimoto-slicer x3d-cm-interior-graffiti-uvs.obj.stl --deviceName="Creality.CR-30"
 sudo make install
 popd
 # Lets also install slic3r
@@ -41,9 +44,14 @@ if ! command -v slic3r &> /dev/null
 then
   sudo apt-get install -y slic3r
 fi
-# Lets also install print3r
-if ! command -v print3r &> /dev/null
+# Lets also install printcore
+if ! command -v printcore &> /dev/null
 then
-  sudo apt-get install -y print3r
+  sudo apt-get install -y printcore
+fi
+# Also set serial
+if ! command -v setserial &> /dev/null
+then
+  sudo apt-get install -y setserial
 fi
 pip3 install -U -r requirements.txt
