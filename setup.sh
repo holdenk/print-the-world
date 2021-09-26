@@ -54,4 +54,10 @@ if ! command -v setserial &> /dev/null
 then
   sudo apt-get install -y setserial
 fi
+# Also mono
+if ! command -v mcs &> /dev/null
+then
+  sudo apt-get install -y mono-complete
+fi
+mcs program.cs
 pip3 install -U -r requirements.txt

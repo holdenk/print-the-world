@@ -130,3 +130,5 @@ dmypy.json
 # Other projects we check out
 KiriMotoSlicer/*
 KiriMotoSlicer
+#generated file
+program.exe

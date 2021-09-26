@@ -1,4 +1,5 @@
 ﻿// From https://www.thingiverse.com/thing:2358314/files CC-ND
+// Updated version https://github.com/zechyc/Tilted-Bed-Conveyor/blob/master/Program.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,20 +29,26 @@ namespace GCodeShifter
 
         static double x_original = 0;
         static double y_original = 0;
-        static double x_offset;
+        static double y_offset;
         static double currentOffset = 0.0;
+        static double moveforward = 0;        
 
         static void Main(string[] args)
         {
 
             string inputFile = args[0];
+            string tempFile =  inputFile + "_temp.gcode";
             string outputFile = args[1];
             string xoffsetLength = "";
             string yoffsetLength = "";
             string newAngle = "";
+            string Slicer = "";
 
-
-            // if we have an Y offset, record it
+            //Make a temp file to work with. This means I can ovewrrite the original
+            File.Delete(tempFile);
+            File.Copy(inputFile, tempFile);
+           
+            // if we have an X offset, record it
             if (args.Length > 2)
             {
                 xoffsetLength = args[2];
@@ -56,50 +63,81 @@ namespace GCodeShifter
             }
 
             // if we have a angle, record it
-            if (args.Length > 4)
-            {
-                string newHyp = args[4];
-                Double.TryParse(newHyp, out Hyp);
-            }
+           // if (args.Length > 4)
+           // {
+           //     string newHyp = args[5];
+           //     Double.TryParse(newHyp, out Hyp);
+           // }
 
             // if we have a angle, record it
-            if (args.Length > 5)
+            if (args.Length > 4)
             {
-                string newAdj = args[5];
-                Double.TryParse(newAdj, out Adj);
+                string newAdj = args[4];
+                Double.TryParse(newAdj, out Angle);
             }
 
             // calculate triangle sides
-            //Hyp = 1 / System.Math.Cos(Angle);
-            //Adj = System.Math.Tan(Angle);
+            
+            Hyp = 1 / System.Math.Cos((90-Angle)/180*Math.PI);
+            Adj = System.Math.Tan((90-Angle)/180*Math.PI);
 
+            //Read slicer engine             
+            using (StreamReader sr = File.OpenText(tempFile))
+                {
+                    using (StreamWriter sw = new StreamWriter(outputFile))
+                    {
+                        string s = String.Empty;
+                        while ((s = sr.ReadLine()) != null && (Slicer==""))
+                        {
+                            if (s.IndexOf("Cura_SteamEngine") > 0) //Cura
+                            {
+                                Slicer="Cura";
+                            }
+                            if (s.IndexOf("Simplify3D(R)") > 0) //Cura
+                            {
+                                Slicer = "S3D";
+                            }
+                            if (s.IndexOf("Slic3r") > 0) //Cura
+                            {
+                                Slicer = "Slic3r";
+                            }
+                        }
+                    }
+                }
+            
+            //Process file
             try
             {
 
-                using (StreamReader sr = File.OpenText(inputFile))
+                using (StreamReader sr = File.OpenText(tempFile))
                 {
                     using (StreamWriter sw = new StreamWriter(outputFile))
                     {
                         string s = String.Empty;
                         while ((s = sr.ReadLine()) != null)
                         {
-                            sw.WriteLine(ProcessLine(s.TrimStart(), sw));
+                            sw.WriteLine(ProcessLine(s.TrimStart(), sw, Slicer));
                         }
                     }
                 }
             }
+
+
+           
 
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message.ToString());
             }
             // close files
+            //delete temp file
+            File.Delete(tempFile);
             Console.WriteLine("GCodeShifter Complete");
-
+            
             //}
         }
 
-        static string ProcessLine(string lineData, StreamWriter sw)
+        static string ProcessLine(string lineData, StreamWriter sw, string slicer)
         {
             string[] temp;
             temp = lineData.Split(Char.Parse(" "));
@@ -110,25 +148,60 @@ namespace GCodeShifter
             // then this is a Z height change
             // we need to multiply the layer height by the Square Root of Two
             // and record the layer height, as it will be the offset going forward
-            if (temp[0] == "G0" && (lineData.IndexOf("Z") > 0))
+            if (temp[0] == "G0" && (lineData.IndexOf("Z") > 0) && (slicer=="Cura")) //Cura
             {
 
                 double currentZ = double.Parse(lineData.Substring(lineData.IndexOf("Z") + 1, (lineData.Length - lineData.IndexOf("Z") - 1)));
 
-                if (currentOffset == 0.0)
+                 if (currentOffset == 0.0)
                 {
                     // capture the very first layer height (as this is the X offset going forward.)
                     currentOffset = currentZ * Adj;  // .7 is the adjacent side length of a 35 degree angle
-                }
+                }                
 
-                // then read the offset value to shift the layer
-                currentZ = currentZ * Hyp;
-
-                lineData = lineData.Substring(0, lineData.IndexOf("Z") + 1) + currentZ.ToString();
+                lineData = lineData.Substring(0, lineData.IndexOf("Z") + 1) + (currentZ* Hyp).ToString();
                 temp = lineData.Split(Char.Parse(" "));
 
-                // and remember to add the new X offset
-                x_offset = x_offset + currentOffset;
+                // and remember to add the new Y offset
+                y_offset = currentZ *Adj - currentOffset; //y_offset + currentOffset; 
+                                
+            }
+            //Slic3r
+            if (temp[0] == "G1" && (lineData.IndexOf("Z") > 0) && (slicer == "Slic3r")) //S3D
+            {
+
+                double currentZ = double.Parse(lineData.Substring(lineData.IndexOf("Z") + 1, (lineData.Length - lineData.IndexOf("F") - lineData.IndexOf("Z")-2)));
+
+                if (currentOffset == 0.0)
+                {
+                    // capture the very first layer height (as this is the Y offset going forward.)
+                    currentOffset = currentZ * Adj;  // .7 is the adjacent side length of a 35 degree angle
+                }
+
+                lineData = lineData.Substring(0, lineData.IndexOf("Z") + 1) + (currentZ * Hyp).ToString();
+                temp = lineData.Split(Char.Parse(" "));
+
+                // and remember to add the new Y offset
+                y_offset = currentZ * Adj - currentOffset; //y_offset + currentOffset; 
+
+            }
+            //S3D
+            if (temp[0] == "G1" && (lineData.IndexOf("Z") > 0) && (slicer == "S3D")) //S3D
+            {
+
+                double currentZ = double.Parse(lineData.Substring(lineData.IndexOf("Z") + 1, (lineData.Length - lineData.IndexOf("F"))));
+
+                if (currentOffset == 0.0)
+                {
+                    // capture the very first layer height (as this is the Y offset going forward.)
+                    currentOffset = currentZ * Adj;  // .7 is the adjacent side length of a 35 degree angle
+                }
+
+                lineData = lineData.Substring(0, lineData.IndexOf("Z") + 1) + (currentZ * Hyp).ToString();
+                temp = lineData.Split(Char.Parse(" "));
+
+                // and remember to add the new Y offset
+                y_offset = currentZ * Adj - currentOffset; //y_offset + currentOffset; 
 
             }
 
@@ -151,15 +224,18 @@ namespace GCodeShifter
                                 if (temp[segment].StartsWith("X") && !xFixed)
                                 {
                                     double xValue = double.Parse(temp[segment].Substring(1));
-                                    temp[segment] = "X" + (xValue + x_offset + x_original).ToString();
-                                    xFixed = !xFixed;
+                                    temp[segment] = "X" + (xValue + x_original).ToString();
+                                    xFixed = !xFixed; 
                                 }
 
                                 if (temp[segment].StartsWith("Y") && !yFixed)
                                 {
+                                    
+                                    //Find moveforward value
+                                    if (moveforward == 0) { moveforward = double.Parse(temp[segment].Substring(1)); }
                                     double yValue = double.Parse(temp[segment].Substring(1));
-                                    temp[segment] = "Y" + (yValue + y_original).ToString();
-                                    yFixed = !yFixed;
+                                    temp[segment] = "Y" + (yValue + y_offset + y_original - moveforward).ToString();
+                                    xFixed = !xFixed;
                                 }
                             }
 
