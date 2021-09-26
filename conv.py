@@ -10,7 +10,7 @@ ms = ml.MeshSet()
 ms.load_new_mesh(input_file)
 # Make it fit
 biggest = max(ms.current_mesh().bounding_box().dim_y(), ms.current_mesh().bounding_box().dim_x(), ms.current_mesh().bounding_box().dim_z())
-scale = 150 / biggest
+scale = 100 / biggest
 ms.apply_filter('matrix_set_from_translation_rotation_scale', scalex=scale, scaley=scale, scalez=scale)
 ms.save_current_mesh(f"{input_file}.stl")
 sys.exit(0)
