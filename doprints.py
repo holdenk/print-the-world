@@ -2,7 +2,7 @@ import csv
 import tempfile
 import os
 import subprocess
-#from obswebsocket import obsws, requests
+from obswebsocket import obsws, requests
 import zipfile
 from pathlib import Path
 
@@ -24,8 +24,8 @@ def on_event(message):
         pass
 
 candidates = None
-#obs_client = obswebsocket.obsws("localhost", 4444, "secret")
-#obs_client.register(on_event)
+obs_client = obswebsocket.obsws("localhost", 4444, "secret")
+obs_client.register(on_event)
 with open('candidates.csv', newline='') as infile:
     dialect = csv.Sniffer().sniff(infile.read(1024))
     infile.seek(0)
@@ -107,5 +107,9 @@ M84                ; disable stepper motors
                                 files_printed = files_printed + 1
                 finally:
                     pass
-#            obs_client.call(requests.StopRecording())
-#        while recording_file is None:
+            obs_client.call(requests.StopRecording())
+        while recording_file is None:
+            import time
+            time.sleep(10)
+            print("Waiting for recording file to exist....")
+        done_writer.write(candidate['file_url'], candidate['friendly_url'], candidate['name'], candidate['name'], count, recording_file)
