@@ -40,7 +40,7 @@ with open('candidates.csv', newline='') as infile:
         
     with open('done.csv', "a") as donefile:
         recording_file = None
-        obs_client.call(requests.StartRecordig())
+        obs_client.call(obswebsocket.requests.StartRecordig())
         count = count + 1
         with open("count", "w") as countout:
             countout.write(str(count))
@@ -107,7 +107,7 @@ M84                ; disable stepper motors
                                 files_printed = files_printed + 1
                 finally:
                     pass
-            obs_client.call(requests.StopRecording())
+            obs_client.call(obswebsocket.requests.StopRecording())
         while recording_file is None:
             import time
             time.sleep(10)
