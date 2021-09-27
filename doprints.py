@@ -2,7 +2,7 @@ import csv
 import tempfile
 import os
 import subprocess
-from obswebsocket import obsws, requests
+import obswebsocket
 import zipfile
 from pathlib import Path
 
@@ -40,7 +40,7 @@ with open('candidates.csv', newline='') as infile:
         
     with open('done.csv', "a") as donefile:
         recording_file = None
-        #obs_client.call(requests.StartRecordig())
+        obs_client.call(requests.StartRecordig())
         count = count + 1
         with open("count", "w") as countout:
             countout.write(str(count))
