@@ -33,10 +33,10 @@ with open('candidates.csv', newline='') as infile:
     try:
         open('done.csv')
     except:
-        file = open('done.csv', "w")
-        fieldnames = ['file_url', 'friendly_url', 'name', 'id', 'recording_file']
-        done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
-        done_writer.writeheader()
+        with open('done.csv', "w") as donefile:
+            fieldnames = ['file_url', 'friendly_url', 'name', 'id', 'recording_file']
+            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
+            done_writer.writeheader()
         
     with open('done.csv', "a") as donefile:
         recording_file = None
