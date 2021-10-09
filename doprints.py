@@ -90,7 +90,7 @@ with open('candidates.csv', newline='') as infile:
                                     "--filament-diameter",
                                     "1.75",
                                     "--temperature",
-                                    "210",
+                                    "180",
                                     "--bed-temp",
                                     "70",
                                     "--support-material",
