@@ -24,7 +24,7 @@ def on_event(message):
         except:
             pass
 
-use_slic3r = False
+use_slic3r = True
 shift = not use_slic3r
 candidates = None
 obs_client = obsws("localhost", 4444, "secret")
@@ -109,8 +109,7 @@ with open('candidates.csv', newline='') as infile:
                                     "--bedBelt=true",
                                     "-v",
                                     "--bedWidth=220",
-                                    "--bedDepth=300",
-                                    f"--gcodePre={startsG}",
+                                     f"--gcodePre={startsG}",
                                     f"--gcodePost={endG}",
                                     "--extruders.0.extNozzle=0.4",
                                     "--extruders.0.extFilament=1.75",
