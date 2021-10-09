@@ -25,7 +25,7 @@ def on_event(message):
             pass
 
 use_slic3r = True
-shift = not use_slic3r
+shift = use_slic3r
 candidates = None
 obs_client = obsws("localhost", 4444, "secret")
 obs_client.connect()
