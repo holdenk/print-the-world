@@ -100,6 +100,8 @@ with open('candidates.csv', newline='') as infile:
                                     "6",
                                     "--retract-speed",
                                     "70",
+                                    "--start-gcode",
+                                    "",
                                     "--end-gcode",
                                     endG,
                                     str(stl)]
