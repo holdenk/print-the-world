@@ -12,7 +12,7 @@ G28                ; home axes
 G92 E0             ; reset filament position
 G1 Y0.15           ; move head to belt
 G1 X200 E50 F800   ; extruder purge line
-G1 Z0.3            ; shift belt away 0.3mm
+G1 Z300            ; shift belt away 300mm
 G1 X0 E100         ; extruder purge line
 G92 Z0 E0          ; reset bed + extruder position
 M117 CR-30 Printing...
