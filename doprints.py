@@ -23,9 +23,25 @@ def on_event(message):
     except:
         pass
 
+use_slic3r = False
+shift = not use_slic3r
 candidates = None
 obs_client = obsws("localhost", 4444, "secret")
 obs_client.register(on_event)
+endG = """M107               ; disable cooling fan
+M106 P0 S0         ; disable cooling fan
+M104 S0            ; shut down hot end
+M140 S0            ; shut down bed
+G92 E1             ; set filament position
+G1 E-1 F300        ; retract filament
+G28 X              ; home X axis
+G1 Y50 F1000       ; lift y axis
+M84                ; disable stepper motors
+""",
+startsG = ""
+with open("start.gcode") as start_in:
+    for line in start_in
+    startsG+=line
 with open('candidates.csv', newline='') as infile:
     dialect = csv.Sniffer().sniff(infile.read(1024))
     infile.seek(0)
@@ -57,54 +73,65 @@ with open('candidates.csv', newline='') as infile:
                         for path in Path(temp_dir).rglob('*'):
                             subprocess.run(["python3", "conv.py", path])
                         for stl in Path(temp_dir).rglob('*.stl'):
-                            subprocess.run([
-                                "slic3r",
-                                "--gcode-flavor",
-                                "marlin",
-                                "--avoid-crossing-perimeters",
-                                "--no-gui",
-                                "--nozzle-diameter",
-                                "0.4",
-                                "--filament-diameter",
-                                "1.75",
-                                "--temperature",
-                                "210",
-                                "--bed-temp"
-                                "70",
-                                "--support-material",
-                                "--support-material-threshold",
-                                "0",
-                                "--retract-length",
-                                "6",
-                                "--retract-speed",
-                                "70",
-                                
-                                "--end-gcode",
-"""M107               ; disable cooling fan
-M106 P0 S0         ; disable cooling fan
-M104 S0            ; shut down hot end
-M140 S0            ; shut down bed
-G92 E1             ; set filament position
-G1 E-1 F300        ; retract filament
-G28 X              ; home X axis
-G1 Y50 F1000       ; lift y axis
-M84                ; disable stepper motors
-""",
-                                stl])
+                            if use_slic3r:
+                                subprocess.run([
+                                    "slic3r",
+                                    "--gcode-flavor",
+                                    "marlin",
+                                    "--avoid-crossing-perimeters",
+                                    "--no-gui",
+                                    "--nozzle-diameter",
+                                    "0.4",
+                                    "--filament-diameter",
+                                    "1.75",
+                                    "--temperature",
+                                    "210",
+                                    "--bed-temp"
+                                    "70",
+                                    "--support-material",
+                                    "--support-material-threshold",
+                                    "0",
+                                    "--retract-length",
+                                    "6",
+                                    "--retract-speed",
+                                    "70",
+                                    "--end-gcode",
+                                    endG,
+                                    stl])
+                            else:
+                                subprocess.run([
+                                    "kirimoto-slicer",
+                                    "--bedBelt=true",
+                                    "-v",
+                                    "--bedWidth=220",
+                                    "--gcodePre",
+                                    startsG,
+                                    "--gcodePost",
+                                    endG,
+                                    "--extruders.0.extNozzle=0.4",
+                                    "--extruders.0.extFilament=1.75",
+                                    "--buildHeight=170",
+                                    "--sliceFillType=gyroid",
+                                    "--sliceSupportEnable=true",
+                                    "--outputRetractDist=20",
+                                    "--outputTemp=180",
+                                    stl
+                                ])
                         for gcode in Path(temp_dir).rglob('*.gcode'):
-                            shifted = f"skew+{gcode}"
-                            combined = f"combined+{gcode}"
-                            subprocess.run(["./program.exe", gcode, f"skew+{gcode}", "0", "0", "45"])
-                            with open("start.gcode") as start_in:
-                                with open(combined, "w") as combined_out:
-                                    with open(shifted) as shifted_in:
-                                        for line in start_in:
-                                            combined_out.write(line)
+                            if shift:
+                                shifted = f"skew+{gcode}"
+                                combined = f"combined+{gcode}"
+                                subprocess.run(["./program.exe", gcode, f"skew+{gcode}", "0", "0", "45"])
+                                with open("start.gcode") as start_in:
+                                    with open(combined, "w") as combined_out:
+                                        with open(shifted) as shifted_in:
+                                            for line in start_in:
+                                                combined_out.write(line)
                                             for line in shifted_in:
                                                 combined_out.write(line)
-                            ret = subprocess.run(["printcore", "/dev/ttyUSB0", combined])
-                            if (ret == 0):
-                                files_printed = files_printed + 1
+                                ret = subprocess.run(["printcore", "/dev/ttyUSB0", combined])
+                                if (ret == 0):
+                                    files_printed = files_printed + 1
                 finally:
                     pass
             obs_client.call(requests.StopRecording())
