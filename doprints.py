@@ -27,6 +27,7 @@ use_slic3r = False
 shift = not use_slic3r
 candidates = None
 obs_client = obsws("localhost", 4444, "secret")
+obs_client.connect()
 obs_client.register(on_event)
 endG = """M107               ; disable cooling fan
 M106 P0 S0         ; disable cooling fan
