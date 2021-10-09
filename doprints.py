@@ -77,8 +77,9 @@ with open('candidates.csv', newline='') as infile:
                         for path in Path(temp_dir).rglob('*'):
                             subprocess.run(["python3", "conv.py", path])
                         for stl in Path(temp_dir).rglob('*.stl'):
+                            cmd = []
                             if use_slic3r:
-                                subprocess.run([
+                                cmd = [
                                     "slic3r",
                                     "--gcode-flavor",
                                     "marlin",
@@ -101,13 +102,14 @@ with open('candidates.csv', newline='') as infile:
                                     "70",
                                     "--end-gcode",
                                     endG,
-                                    stl])
+                                    stl]
                             else:
-                                subprocess.run([
+                                cmd = [
                                     "kirimoto-slicer",
                                     "--bedBelt=true",
                                     "-v",
                                     "--bedWidth=220",
+                                    "--bedDepth=300",
                                     f"--gcodePre={startsG}",
                                     f"--gcodePost={endG}",
                                     "--extruders.0.extNozzle=0.4",
@@ -118,7 +120,9 @@ with open('candidates.csv', newline='') as infile:
                                     "--outputRetractDist=20",
                                     "--outputTemp=180",
                                     stl
-                                ])
+                                ]
+                            print(f"Running {cmd}")
+                            subprocess.run(cmd)
                         for gcode in Path(temp_dir).rglob('*.gcode'):
                             combined = f"combined+{gcode}"
                             if shift:
