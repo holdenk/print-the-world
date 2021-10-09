@@ -102,7 +102,7 @@ with open('candidates.csv', newline='') as infile:
                                     "70",
                                     "--end-gcode",
                                     endG,
-                                    stl]
+                                    str(stl)]
                             else:
                                 cmd = [
                                     "kirimoto-slicer",
@@ -118,7 +118,7 @@ with open('candidates.csv', newline='') as infile:
                                     "--sliceSupportEnable=true",
                                     "--outputRetractDist=20",
                                     "--outputTemp=180",
-                                    stl
+                                    str(stl)
                                 ]
                             print(f"Running {cmd}")
                             subprocess.run(cmd)
