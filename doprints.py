@@ -29,6 +29,7 @@ candidates = None
 obs_client = obsws("localhost", 4444, "secret")
 obs_client.connect()
 obs_client.register(on_event)
+
 endG = """M107               ; disable cooling fan
 M106 P0 S0         ; disable cooling fan
 M104 S0            ; shut down hot end
@@ -38,11 +39,12 @@ G1 E-1 F300        ; retract filament
 G28 X              ; home X axis
 G1 Y50 F1000       ; lift y axis
 M84                ; disable stepper motors
-""",
+"""
+
 startsG = ""
 with open("start.gcode") as start_in:
     for line in start_in:
-        startsG+=str(line)
+        startsG = f"startsG\n{line}"
 with open('candidates.csv', newline='') as infile:
     dialect = csv.Sniffer().sniff(infile.read(1024))
     infile.seek(0)
