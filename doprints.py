@@ -123,10 +123,10 @@ with open('candidates.csv', newline='') as infile:
                             print(f"Running {cmd}")
                             subprocess.run(cmd)
                         for gcode in Path(temp_dir).rglob('*.gcode'):
-                            combined = f"combined+{gcode}"
+                            combined = f"{gcode}.combined.gcode"
                             if shift:
-                                shifted = f"skew+{gcode}"
-                                subprocess.run(["./program.exe", gcode, f"skew+{gcode}", "0", "0", "45"])
+                                shifted = f"{gcode}.skew.gcode"
+                                subprocess.run(["./program.exe", gcode, shifted, "0", "0", "45"])
                                 with open("start.gcode") as start_in:
                                     with open(combined, "w") as combined_out:
                                         with open(shifted) as shifted_in:
