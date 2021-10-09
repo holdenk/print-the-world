@@ -91,7 +91,7 @@ with open('candidates.csv', newline='') as infile:
                                     "1.75",
                                     "--temperature",
                                     "180",
-                                    "--bed-temp",
+                                    "--bed-temperature",
                                     "70",
                                     "--support-material",
                                     "--support-material-threshold",
