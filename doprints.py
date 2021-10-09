@@ -42,7 +42,7 @@ M84                ; disable stepper motors
 startsG = ""
 with open("start.gcode") as start_in:
     for line in start_in:
-        startsG+=line
+        startsG+=str(line)
 with open('candidates.csv', newline='') as infile:
     dialect = csv.Sniffer().sniff(infile.read(1024))
     infile.seek(0)
