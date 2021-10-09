@@ -2,7 +2,7 @@ import csv
 import tempfile
 import os
 import subprocess
-from obswebsocket import obsws, requests
+from obswebsocket import obsws, requests, events
 import zipfile
 from pathlib import Path
 
@@ -16,12 +16,13 @@ except:
 recording_file = None
         
 def on_event(message):
-    print(u"Got message: {}".format(message))
-    try:
-        if message.getRecordingFilename():
-            recording_file = message.getRecordingFilename()
-    except:
-        pass
+    if not isinstance(message, events.StreamStatus):
+        print(u"Got message: {}".format(message))
+        try:
+            if message.getRecordingFilename():
+                recording_file = message.getRecordingFilename()
+        except:
+            pass
 
 use_slic3r = False
 shift = not use_slic3r
