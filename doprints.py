@@ -121,9 +121,9 @@ with open('candidates.csv', newline='') as infile:
                                     stl
                                 ])
                         for gcode in Path(temp_dir).rglob('*.gcode'):
+                            combined = f"combined+{gcode}"
                             if shift:
                                 shifted = f"skew+{gcode}"
-                                combined = f"combined+{gcode}"
                                 subprocess.run(["./program.exe", gcode, f"skew+{gcode}", "0", "0", "45"])
                                 with open("start.gcode") as start_in:
                                     with open(combined, "w") as combined_out:
@@ -132,9 +132,11 @@ with open('candidates.csv', newline='') as infile:
                                                 combined_out.write(line)
                                             for line in shifted_in:
                                                 combined_out.write(line)
-                                ret = subprocess.run(["printcore", "/dev/ttyUSB0", combined])
-                                if (ret == 0):
-                                    files_printed = files_printed + 1
+                            else:
+                                combined = gcode
+                            ret = subprocess.run(["printcore", "/dev/ttyUSB0", combined])
+                            if (ret == 0):
+                                files_printed = files_printed + 1
                 finally:
                     pass
             obs_client.call(requests.StopRecording())
