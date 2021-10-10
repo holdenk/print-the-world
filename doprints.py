@@ -14,8 +14,8 @@ try:
 except:
     pass
 
-recording_file = None
 global recording_file
+recording_file = None
         
 def on_event(message):
     global recording_file
