@@ -108,17 +108,7 @@ with open('candidates.csv', newline='') as infile:
                             else:
                                 cmd = [
                                     "kirimoto-slicer",
-                                    "--bedBelt=true",
-                                    "-v",
-                                    "--bedWidth=220",
-                                     f"--gcodePre={startsG}",
-                                    f"--gcodePost={endG}",
-                                    "--extruders.0.extNozzle=0.4",
-                                    "--extruders.0.extFilament=1.75",
-                                    "--buildHeight=170",
-                                    "--sliceFillType=gyroid",
-                                    "--sliceSupportEnable=true",
-                                    "--outputRetractDist=20",
+                                    "--load=Creality.CR-30"
                                     "--outputTemp=180",
                                     str(stl)
                                 ]
