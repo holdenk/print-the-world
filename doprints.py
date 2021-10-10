@@ -21,7 +21,9 @@ def on_event(message):
         try:
             if message.getRecordingFilename():
                 recording_file = message.getRecordingFilename()
-        except:
+                print(f"upded recording file name {recording_file}")
+        except BaseException as err:
+            print(f"Error {err} updating")
             pass
 
 use_slic3r = False
