@@ -17,6 +17,7 @@ except:
 recording_file = None
         
 def on_event(message):
+    global recording_file
     if not isinstance(message, events.StreamStatus):
         print(u"Got message: {}".format(message))
         try:
