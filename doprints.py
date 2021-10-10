@@ -143,7 +143,7 @@ with open('candidates.csv', newline='') as infile:
         while True:
             import time
             time.sleep(10)
-            print("Waiting for recording file to exist....")
+            print(f"Waiting for recording file to exist {recording_file}....")
             with l.acquire():
                 if recording_file is not None:
                     print(f"Huzzah recorded as {recording_file}")
