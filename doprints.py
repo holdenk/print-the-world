@@ -5,6 +5,9 @@ import subprocess
 from obswebsocket import obsws, requests, events
 import zipfile
 from pathlib import Path
+import threading
+
+l = threading.lock()
 
 count = 0
 try:
@@ -20,8 +23,9 @@ def on_event(message):
         print(u"Got message: {}".format(message))
         try:
             if message.getRecordingFilename():
-                recording_file = message.getRecordingFilename()
-                print(f"upded recording file name {recording_file}")
+                with l.acquire():
+                    recording_file = message.getRecordingFilename()
+                    print(f"updated recording file name to {recording_file}")
         except BaseException as err:
             print(f"Error {err} updating")
             pass
@@ -136,8 +140,14 @@ with open('candidates.csv', newline='') as infile:
                 finally:
                     pass
             obs_client.call(requests.StopRecording())
-        while recording_file is None:
+        while True:
             import time
             time.sleep(10)
             print("Waiting for recording file to exist....")
+            with l.acquire():
+                if recording_file is not None:
+                    print(f"Huzzah recorded as {recording_file}")
+                    break
+                else:
+                    print(f"No recording in {recording_file}")
         done_writer.write(candidate['file_url'], candidate['friendly_url'], candidate['name'], candidate['name'], count, recording_file)
