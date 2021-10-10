@@ -7,8 +7,6 @@ import zipfile
 from pathlib import Path
 import threading
 
-l = threading.Lock()
-
 count = 0
 try:
     with open("count") as countin:
@@ -23,9 +21,8 @@ def on_event(message):
         print(u"Got message: {}".format(message))
         try:
             if message.getRecordingFilename():
-                with l.acquire():
-                    recording_file = message.getRecordingFilename()
-                    print(f"updated recording file name to {recording_file}")
+                recording_file = message.getRecordingFilename()
+                print(f"updated recording file name to {recording_file}")
         except BaseException as err:
             print(f"Error {err} updating")
             pass
@@ -144,10 +141,9 @@ with open('candidates.csv', newline='') as infile:
             import time
             time.sleep(10)
             print(f"Waiting for recording file to exist {recording_file}....")
-            with l.acquire():
-                if recording_file is not None:
-                    print(f"Huzzah recorded as {recording_file}")
-                    break
-                else:
-                    print(f"No recording in {recording_file}")
+            if recording_file is not None:
+                print(f"Huzzah recorded as {recording_file}")
+                break
+            else:
+                print(f"No recording in {recording_file}")
         done_writer.write(candidate['file_url'], candidate['friendly_url'], candidate['name'], candidate['name'], count, recording_file)
