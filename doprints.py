@@ -108,7 +108,7 @@ with open('candidates.csv', newline='') as infile:
                             else:
                                 cmd = [
                                     "kirimoto-slicer",
-                                    "--load=Creality.CR-30"
+                                    "--load=Creality.CR-30",
                                     "--outputTemp=180",
                                     str(stl)
                                 ]
