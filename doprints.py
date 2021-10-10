@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 import threading
 
-l = threading.lock()
+l = threading.Lock()
 
 count = 0
 try:
