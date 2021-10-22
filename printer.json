@@ -90,7 +90,7 @@
         "firstLayerBrim": 0,
         "firstLayerBeltLead": 0,
         "firstLayerFanSpeed": 0,
-        "outputTemp": 215,
+        "outputTemp": 220,
         "outputFanMax": 255,
         "outputBedTemp": 70,
         "outputFanSpeed": 255,
