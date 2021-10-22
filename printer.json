@@ -15,7 +15,7 @@
         "G92 E0             ; reset filament position",
         "G1 Y0.15           ; move head to belt",
         "G1 X200 E50 F800   ; extruder purge line",
-        "G1 Z500            ; shift belt away 500mm",
+        "G1 Z690            ; shift belt away 690mm",
         "G1 X0 E100         ; extruder purge line",
         "G92 Z0 E0          ; reset bed + extruder position",
         "M117 CR-30 Printing..."
@@ -55,12 +55,9 @@
         "origin_center": false,
         "extrude_abs": true,
         "bed_belt": true,
-	"bedBelt": true,
         "bed_width": 220,
         "bed_depth": 300,
-        "bedDepth": 300,
-        "build_height": 170,
-	"buildHeight": 170
+        "build_height": 170
     },
     "profiles":[{
         "processName": "CR30 PLA",
@@ -71,7 +68,7 @@
         "sliceFillAngle": 45,
         "sliceFillOverlap": 0.3,
         "sliceFillSparse": 0.2,
-        "sliceFillType": "hex",
+        "sliceFillType": "gyroid",
         "sliceAdaptive": false,
         "sliceMinHeight": 0,
         "sliceSupportDensity": 0.25,
@@ -82,6 +79,7 @@
         "sliceSupportExtra": 0,
         "sliceSupportAngle": 1,
         "sliceSupportNozzle": 0,
+	"sliceSupportEnable": true,
         "sliceSolidMinArea": 15,
         "sliceSolidLayers": 3,
         "sliceBottomLayers": 3,
@@ -92,7 +90,7 @@
         "firstLayerBrim": 0,
         "firstLayerBeltLead": 0,
         "firstLayerFanSpeed": 0,
-        "outputTemp": 180,
+        "outputTemp": 185,
         "outputFanMax": 255,
         "outputBedTemp": 70,
         "outputFanSpeed": 255,
@@ -111,8 +109,8 @@
         "outputMinSpeed": 5.0,
         "outputCoastDist": 0.1,
         "outputWipeDistance": 0,
-        "outputLayerRetract": false,
-        "detectThinWalls": false,
+        "outputLayerRetract": true,
+        "detectThinWalls": true,
         "zHopDistance": 0,
         "antiBacklash": 0
     }]
