@@ -11,6 +11,8 @@ import zipfile
 from pathlib import Path
 import threading
 
+import time
+
 import my_settings
 
 printing = "Loading..."
@@ -43,6 +45,9 @@ class Bot(commands.Bot):
 bot = Bot()
 bot_thread = threading.Thread(target=bot.run)
 bot_thread.start()
+
+
+time.sleep(10)
 
 count = 0
 try:
