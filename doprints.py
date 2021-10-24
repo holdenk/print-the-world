@@ -151,7 +151,7 @@ with open('candidates.csv', newline='') as infile:
                                 print(f"Error slicing {stl}")
                                 continue
                             gcode = f"{path}.gcode"
-                            printing = "Printing {gcode} from {candidate['url']}"
+                            printing = f"Printing {gcode} from {candidate['url']}"
                             asyncio.run(bot.update_printing(printing))
                             print_proc = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
                             returncode = print_proc.returncode
