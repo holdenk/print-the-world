@@ -50,11 +50,11 @@ finished = {}
 # Load already finished
 try:
     with open('done.csv') as donefile:
-    dialect = csv.Sniffer().sniff(infile.read(1024))
-    infile.seek(0)
-    done_candidates = csv.DictReader(infile, dialect=dialect)
-    for candidate in done_candidates:
-        finished[candidate['file_url']] = 1
+        dialect = csv.Sniffer().sniff(infile.read(1024))
+        infile.seek(0)
+        done_candidates = csv.DictReader(infile, dialect=dialect)
+        for candidate in done_candidates:
+            finished[candidate['file_url']] = 1
 except:
     pass
 
