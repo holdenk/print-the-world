@@ -84,7 +84,7 @@ with open('candidates.csv', newline='') as infile:
             fieldnames = ['file_url', 'friendly_url', 'name', 'id', 'recording_file']
             done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
             for candidate in candidates:
-                if candidate["file_url"] in done_candidates:
+                if candidate["file_url"] in finished:
                     continue # Skip finished candidates
                 files_printed = 0
                 try:
