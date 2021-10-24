@@ -122,24 +122,29 @@ with open('candidates.csv', newline='') as infile:
                         with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
                             zip_ref.extractall(temp_dir)
                         for path in Path(temp_dir).rglob('*'):
-                            subprocess.run(["python3", "conv.py", path])
-                        for stl in Path(temp_dir).rglob('*.stl'):
+                            conv_process = subprocess.run(["python3", "conv.py", path])
+                            returnCode = conv_process.returnCode
+                            if returnCode != 0:
+                                print(f"Error converting {path}")
+                                continue
+                            stl = f"{path}.stl"
                             cmd = [
                                 "kirimoto-slicer",
                                 "--load=printer.json",
                                 str(stl)
                             ]
                             print(f"Running {cmd}")
-                            convert_process = subprocess.run(cmd)
-                            returnCode = convert_process.poll()
+                            slice_process = subprocess.run(cmd)
+                            returnCode = slice_process.returnCode
                             if returnCode != 0:
                                 print(f"Error slicing {stl}")
                                 continue
                             gcode = f"{stl}.gcode"
                             printing = "Printing {gcode} from {candidate['url']}"
                             bot.update_printing(printing)
-                            ret = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
-                            if (ret == 0):
+                            print_proc = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
+                            returnCode = print_proc.returnCode
+                            if (returnCode == 0):
                                 files_printed = files_printed + 1
                 finally:
                     pass
