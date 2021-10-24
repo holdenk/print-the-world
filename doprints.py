@@ -35,6 +35,8 @@ class Bot(commands.Bot):
     def update_printing(self, printing: str):
         self.connected_channels[0].send(f'Now printing {printing}')
 
+bot = bot()
+
 count = 0
 try:
     with open("count") as countin:
