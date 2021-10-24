@@ -1,3 +1,5 @@
+from twitchio.ext import commands
+
 import csv
 import tempfile
 import os
@@ -6,6 +8,32 @@ from obswebsocket import obsws, requests, events
 import zipfile
 from pathlib import Path
 import threading
+
+import my_settings
+
+printing = "Loading..."
+
+class Bot(commands.Bot):
+
+    def __init__(self):
+        # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
+        super().__init__(token=my_settings.ACCESS_TOKEN, prefix='?', initial_channels=my_settings.CHANNEL)
+
+    async def event_ready(self):
+        # We are logged in and ready to chat and use commands...
+        print(f'Logged in as | {self.nick}')
+
+    @commands.command()
+    async def hello(self, ctx: commands.Context):
+        # Send a hello back!
+        await ctx.send(f'Hello {ctx.author.name}!')
+
+    @commands.command()
+    async def printing(self, ctx: commands.Context):
+        await ctx.reply(f'Currently printing {printing}')
+
+    def update_printing(self, printing: str):
+        self.connected_channels[0].send(f'Now printing {printing}')
 
 count = 0
 try:
@@ -102,8 +130,14 @@ with open('candidates.csv', newline='') as infile:
                                 str(stl)
                             ]
                             print(f"Running {cmd}")
-                            subprocess.run(cmd)
-                        for gcode in Path(temp_dir).rglob('*.gcode'):
+                            convert_process = subprocess.run(cmd)
+                            returnCode = convert_process.poll()
+                            if returnCode != 0:
+                                print(f"Error slicing {stl}")
+                                continue
+                            gcode = f"{stl}.gcode"
+                            printing = "Printing {gcode} from {candidate['url']}"
+                            bot.update_printing(printing)
                             ret = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
                             if (ret == 0):
                                 files_printed = files_printed + 1
