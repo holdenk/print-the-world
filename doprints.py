@@ -1,5 +1,7 @@
 from twitchio.ext import commands
 
+import asyncio
+
 import csv
 import tempfile
 import os
@@ -32,10 +34,12 @@ class Bot(commands.Bot):
     async def printing(self, ctx: commands.Context):
         await ctx.reply(f'Currently printing {printing}')
 
-    def update_printing(self, printing: str):
+    async def update_printing(self, printing: str):
         self.connected_channels[0].send(f'Now printing {printing}')
 
 bot = Bot()
+bot_thread = threading.Thread(target=bot.run)
+bot_thread.start()
 
 count = 0
 try:
@@ -143,7 +147,7 @@ with open('candidates.csv', newline='') as infile:
                                 continue
                             gcode = f"{stl}.gcode"
                             printing = "Printing {gcode} from {candidate['url']}"
-                            bot.update_printing(printing)
+                            asyncio.run(bot.update_printing(printing))
                             print_proc = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
                             returncode = print_proc.returncode
                             if (returncode == 0):
