@@ -37,6 +37,9 @@ class Bot(commands.Bot):
     async def update_printing(self, printing: str):
         self.connected_channels[0].send(f'Now printing {printing}')
 
+    async def fetching(self, url: str):
+        self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
+
 bot = Bot()
 bot_thread = threading.Thread(target=bot.run)
 bot_thread.start()
@@ -92,10 +95,6 @@ try:
 except:
     pass
 
-startsG = ""
-with open("start.gcode") as start_in:
-    for line in start_in:
-        startsG = f"startsG\n{line}"
 with open('candidates.csv', newline='') as infile:
     dialect = csv.Sniffer().sniff(infile.read(1024))
     infile.seek(0)
@@ -124,6 +123,7 @@ with open('candidates.csv', newline='') as infile:
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
                         path_to_zip_file = f"{temp_dir}/a.zip"
+                        asyncio.run(bot.fetching(candidate['file_url'))
                         subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
                         with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
                             zip_ref.extractall(temp_dir)
@@ -145,7 +145,7 @@ with open('candidates.csv', newline='') as infile:
                             if returncode != 0:
                                 print(f"Error slicing {stl}")
                                 continue
-                            gcode = f"{stl}.gcode"
+                            gcode = f"{path}.gcode"
                             printing = "Printing {gcode} from {candidate['url']}"
                             asyncio.run(bot.update_printing(printing))
                             print_proc = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
