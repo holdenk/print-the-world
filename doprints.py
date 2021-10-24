@@ -37,10 +37,10 @@ class Bot(commands.Bot):
         await ctx.reply(f'Currently printing {printing}')
 
     async def update_printing(self, printing: str):
-        self.connected_channels[0].send(f'Now printing {printing}')
+        await self.connected_channels[0].send(f'Now printing {printing}')
 
     async def fetching(self, url: str):
-        self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
+        await self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
 
 bot = Bot()
 bot_thread = threading.Thread(target=bot.run)
