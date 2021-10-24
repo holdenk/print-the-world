@@ -169,4 +169,9 @@ with open('candidates.csv', newline='') as infile:
                 break
             else:
                 print(f"No recording in {recording_file}")
-        done_writer.write(candidate['file_url'], candidate['friendly_url'], candidate['name'], candidate['name'], count, recording_file)
+        done_writer.writerow({
+            "file_url": candidate['file_url'],
+            "friendly_url": candidate['friendly_url'],
+            "name": candidate['name'],
+            "id": count,
+            "recording_file": recording_file})
