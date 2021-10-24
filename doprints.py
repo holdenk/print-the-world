@@ -123,8 +123,8 @@ with open('candidates.csv', newline='') as infile:
                             zip_ref.extractall(temp_dir)
                         for path in Path(temp_dir).rglob('*'):
                             conv_process = subprocess.run(["python3", "conv.py", path])
-                            returnCode = conv_process.returnCode
-                            if returnCode != 0:
+                            returncode = conv_process.returncode
+                            if returncode != 0:
                                 print(f"Error converting {path}")
                                 continue
                             stl = f"{path}.stl"
@@ -135,16 +135,16 @@ with open('candidates.csv', newline='') as infile:
                             ]
                             print(f"Running {cmd}")
                             slice_process = subprocess.run(cmd)
-                            returnCode = slice_process.returnCode
-                            if returnCode != 0:
+                            returncode = slice_process.returncode
+                            if returncode != 0:
                                 print(f"Error slicing {stl}")
                                 continue
                             gcode = f"{stl}.gcode"
                             printing = "Printing {gcode} from {candidate['url']}"
                             bot.update_printing(printing)
                             print_proc = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
-                            returnCode = print_proc.returnCode
-                            if (returnCode == 0):
+                            returncode = print_proc.returncode
+                            if (returncode == 0):
                                 files_printed = files_printed + 1
                 finally:
                     pass
