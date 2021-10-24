@@ -29,8 +29,6 @@ def on_event(message):
             print(f"Error {err} updating")
             pass
 
-use_slic3r = False
-shift = use_slic3r
 candidates = None
 obs_client = obsws("localhost", 4444, "secret")
 obs_client.connect()
@@ -98,57 +96,15 @@ with open('candidates.csv', newline='') as infile:
                         for path in Path(temp_dir).rglob('*'):
                             subprocess.run(["python3", "conv.py", path])
                         for stl in Path(temp_dir).rglob('*.stl'):
-                            cmd = []
-                            if use_slic3r:
-                                cmd = [
-                                    "slic3r",
-                                    "--gcode-flavor",
-                                    "marlin",
-                                    "--avoid-crossing-perimeters",
-                                    "--no-gui",
-                                    "--nozzle-diameter",
-                                    "0.4",
-                                    "--filament-diameter",
-                                    "1.75",
-                                    "--temperature",
-                                    "180",
-                                    "--bed-temperature",
-                                    "70",
-                                    "--support-material",
-                                    "--support-material-threshold",
-                                    "0",
-                                    "--retract-length",
-                                    "6",
-                                    "--retract-speed",
-                                    "70",
-                                    "--start-gcode",
-                                    "",
-                                    "--end-gcode",
-                                    endG,
-                                    str(stl)]
-                            else:
-                                cmd = [
-                                    "kirimoto-slicer",
-                                    "--load=printer.json",
-                                    str(stl)
-                                ]
+                            cmd = [
+                                "kirimoto-slicer",
+                                "--load=printer.json",
+                                str(stl)
+                            ]
                             print(f"Running {cmd}")
                             subprocess.run(cmd)
                         for gcode in Path(temp_dir).rglob('*.gcode'):
-                            combined = f"{gcode}.combined.gcode"
-                            if shift:
-                                shifted = f"{gcode}.skew.gcode"
-                                subprocess.run(["./program.exe", gcode, shifted, "0", "0", "45"])
-                                with open("start.gcode") as start_in:
-                                    with open(combined, "w") as combined_out:
-                                        with open(shifted) as shifted_in:
-                                            for line in start_in:
-                                                combined_out.write(line)
-                                            for line in shifted_in:
-                                                combined_out.write(line)
-                            else:
-                                combined = gcode
-                            ret = subprocess.run(["printcore", "/dev/ttyUSB0", combined])
+                            ret = subprocess.run(["printcore", "/dev/ttyUSB0", gcode])
                             if (ret == 0):
                                 files_printed = files_printed + 1
                 finally:
