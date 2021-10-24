@@ -47,6 +47,19 @@ G1 Y50 F1000       ; lift y axis
 M84                ; disable stepper motors
 """
 
+finished = {}
+
+# Load already finished
+try:
+    with open('done.csv') as donefile:
+    dialect = csv.Sniffer().sniff(infile.read(1024))
+    infile.seek(0)
+    done_candidates = csv.DictReader(infile, dialect=dialect)
+    for candidate in done_candidates:
+        finished[candidate['file_url']] = 1
+except:
+    pass
+
 startsG = ""
 with open("start.gcode") as start_in:
     for line in start_in:
@@ -55,6 +68,7 @@ with open('candidates.csv', newline='') as infile:
     dialect = csv.Sniffer().sniff(infile.read(1024))
     infile.seek(0)
     candidates = csv.DictReader(infile, dialect=dialect)
+    # Write out the header if the done file doesn't exist yet.
     try:
         open('done.csv')
     except:
@@ -72,6 +86,8 @@ with open('candidates.csv', newline='') as infile:
             fieldnames = ['file_url', 'friendly_url', 'name', 'id', 'recording_file']
             done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
             for candidate in candidates:
+                if candidate["file_url"] in done_candidates:
+                    continue # Skip finished candidates
                 files_printed = 0
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
