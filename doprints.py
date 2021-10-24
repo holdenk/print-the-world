@@ -123,7 +123,7 @@ with open('candidates.csv', newline='') as infile:
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
                         path_to_zip_file = f"{temp_dir}/a.zip"
-                        asyncio.run(bot.fetching(candidate['file_url'))
+                        asyncio.run(bot.fetching(candidate['file_url']))
                         subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
                         with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
                             zip_ref.extractall(temp_dir)
