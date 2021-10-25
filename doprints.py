@@ -193,3 +193,7 @@ with open('candidates.csv', newline='') as infile:
                     "description": candidate['description'],
                     "id": count,
                     "recording_file": recording_file})
+
+
+bot_thread.stop()
+sys.exit(0)
