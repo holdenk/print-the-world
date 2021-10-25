@@ -15,7 +15,7 @@
         "G92 E0             ; reset filament position",
         "G1 Y0.15           ; move head to belt",
         "G1 X200 E50 F800   ; extruder purge line",
-        "G1 Z420.69         ; shift belt away 420.69mm",
+        "G1 Z6.9            ; shift belt away 6.9mm",
         "G1 X0 E100         ; extruder purge line",
         "G92 Z0 E0          ; reset bed + extruder position",
         "M117 CR-30 Printing..."
@@ -24,6 +24,7 @@
         "M107               ; disable cooling fan",
         "M106 P0 S0         ; disable cooling fan",
         "M104 S0            ; shut down hot end",
+	"G1 Z420            ; shift belt away 420mm",
         "M140 S0            ; shut down bed",
         "G92 E1             ; set filament position",
         "G1 E-1 F300        ; retract filament",
@@ -90,7 +91,7 @@
         "firstLayerBrim": 0,
         "firstLayerBeltLead": 0,
         "firstLayerFanSpeed": 0,
-        "outputTemp": 220,
+        "outputTemp": 207, // set output temp to 3*69
         "outputFanMax": 255,
         "outputBedTemp": 70,
         "outputFanSpeed": 255,
