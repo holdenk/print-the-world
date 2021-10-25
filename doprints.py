@@ -17,6 +17,7 @@ import time
 import my_settings
 
 
+plz_stop = False
 printing = "Loading..."
 
 class Bot(commands.Bot):
