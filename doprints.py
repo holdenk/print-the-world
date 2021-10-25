@@ -46,7 +46,7 @@ class Bot(commands.Bot):
         await self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
         await self.connected_channels[0].send(f'The description for this item is:')
         c = 0
-        while (c == 0 or c < len(desc)-400):
+        while (c == 0 or c < len(desc)-400 and c < 800):
             await self.connected_channels[0].send(desc[c:c+400])            
             c += 400
 
