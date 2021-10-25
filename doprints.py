@@ -10,10 +10,12 @@ from obswebsocket import obsws, requests, events
 import zipfile
 from pathlib import Path
 import threading
+import signal
 
 import time
 
 import my_settings
+
 
 printing = "Loading..."
 
@@ -46,6 +48,14 @@ bot = Bot()
 bot_thread = threading.Thread(target=bot.run)
 bot_thread.start()
 
+# Register a signal handler for a gentle shutdown option
+def handler(signum, frame):
+    print('Signal handler called with signal', signum)
+    plz_stop = True
+    return True
+
+# Set the signal handler
+signal.signal(signal.SIGKILL, handler)
 
 time.sleep(10)
 
@@ -114,16 +124,18 @@ with open('candidates.csv', newline='') as infile:
             done_writer.writeheader()
         
     with open('done.csv', "a") as donefile:
-        recording_file = None
-        obs_client.call(requests.StartRecording())
         count = count + 1
         with open("count", "w") as countout:
             countout.write(str(count))
             fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'recording_file']
             done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
             for candidate in candidates:
+                if plz_stop:
+                    break
                 if candidate["file_url"] in finished:
                     continue # Skip finished candidates
+                recording_file = None
+                obs_client.call(requests.StartRecording())
                 files_printed = 0
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
@@ -159,20 +171,24 @@ with open('candidates.csv', newline='') as infile:
                                 files_printed = files_printed + 1
                 finally:
                     pass
+
+            # Stop the recording
             obs_client.call(requests.StopRecording())
-        while True:
-            import time
-            time.sleep(10)
-            print(f"Waiting for recording file to exist {recording_file}....")
-            if recording_file is not None:
-                print(f"Huzzah recorded as {recording_file}")
-                break
-            else:
-                print(f"No recording in {recording_file}")
-        done_writer.writerow({
-            "file_url": candidate['file_url'],
-            "friendly_url": candidate['friendly_url'],
-            "title": candidate['title'],
-            "description": candidate['description'],
-            "id": count,
-            "recording_file": recording_file})
+
+            # Wait for the recording_file to become present
+            while True:
+                import time
+                time.sleep(10)
+                print(f"Waiting for recording file to exist {recording_file}....")
+                if recording_file is not None:
+                    print(f"Huzzah recorded as {recording_file}")
+                    break
+                else:
+                    print(f"No recording in {recording_file}")
+                done_writer.writerow({
+                    "file_url": candidate['file_url'],
+                    "friendly_url": candidate['friendly_url'],
+                    "title": candidate['title'],
+                    "description": candidate['description'],
+                    "id": count,
+                    "recording_file": recording_file})
