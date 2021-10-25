@@ -109,9 +109,7 @@ finished = {}
 # Load already finished
 try:
     with open('done.csv') as donefile:
-        dialect = csv.Sniffer().sniff(infile.read(1024))
-        infile.seek(0)
-        done_candidates = csv.DictReader(infile, dialect=dialect)
+        done_candidates = csv.DictReader(infile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
         for candidate in done_candidates:
             finished[candidate['file_url']] = 1
 except:
@@ -125,7 +123,7 @@ with open('candidates.csv', newline='') as infile:
     except:
         with open('done.csv', "w") as donefile:
             fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'id', 'recording_file']
-            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
+            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
             done_writer.writeheader()
         
     with open('done.csv', "a") as donefile:
@@ -133,7 +131,7 @@ with open('candidates.csv', newline='') as infile:
         with open("count", "w") as countout:
             countout.write(str(count))
             fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'recording_file']
-            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect, quoting=csv.QUOTE_NONNUMERIC)
+            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC)
             for candidate in candidates:
                 if plz_stop:
                     break
