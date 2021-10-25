@@ -87,12 +87,11 @@ with open('rejects', 'w') as rejects:
             new_links = list(filter(is_3d_model, links_for_page(page)))
             for link in new_links:
                 try:
-                    model = _do_extract_model_info(link)
+                    model = extract_model_info(link)
                     candidate_writer.writerow(model)
                 except Exception as e:
                     print(f"Had error {e} on {link}")
                     rejects.write(f"{link}\n")
-                    raise e
                 c = c + 1
             if page != 1:
                 for l in new_links:
