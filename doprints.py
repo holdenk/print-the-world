@@ -42,8 +42,9 @@ class Bot(commands.Bot):
     async def update_printing(self, printing: str):
         await self.connected_channels[0].send(f'Now printing {printing}')
 
-    async def fetching(self, url: str):
+    async def fetching(self, url: str, desc: str):
         await self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
+        await self.connected_channels[0].send(f'The description for this item is {desc}.')
 
 bot = Bot()
 bot_thread = threading.Thread(target=bot.run)
@@ -142,7 +143,7 @@ with open('candidates.csv', newline='') as infile:
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
                         path_to_zip_file = f"{temp_dir}/a.zip"
-                        asyncio.run(bot.fetching(candidate['file_url']))
+                        asyncio.run(bot.fetching(candidate['file_url'], candidate['description']))
                         subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
                         with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
                             zip_ref.extractall(temp_dir)
