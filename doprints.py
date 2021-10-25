@@ -55,7 +55,8 @@ def handler(signum, frame):
     return True
 
 # Set the signal handler
-signal.signal(signal.SIGKILL, handler)
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGTERM, handler)
 
 time.sleep(10)
 
