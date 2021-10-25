@@ -109,7 +109,7 @@ with open('candidates.csv', newline='') as infile:
         open('done.csv')
     except:
         with open('done.csv', "w") as donefile:
-            fieldnames = ['file_url', 'friendly_url', 'name', 'id', 'recording_file']
+            fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'id', 'recording_file']
             done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
             done_writer.writeheader()
         
@@ -119,7 +119,7 @@ with open('candidates.csv', newline='') as infile:
         count = count + 1
         with open("count", "w") as countout:
             countout.write(str(count))
-            fieldnames = ['file_url', 'friendly_url', 'name', 'id', 'recording_file']
+            fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'recording_file']
             done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
             for candidate in candidates:
                 if candidate["file_url"] in finished:
@@ -172,6 +172,7 @@ with open('candidates.csv', newline='') as infile:
         done_writer.writerow({
             "file_url": candidate['file_url'],
             "friendly_url": candidate['friendly_url'],
-            "name": candidate['name'],
+            "title": candidate['title'],
+            "description": candidate['description'],
             "id": count,
             "recording_file": recording_file})
