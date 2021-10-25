@@ -34,9 +34,16 @@ def is_3d_model(url):
     """Is the link (probably) to a 3D model?"""
     return url.startswith("/object/3d")
 
-@retry(delay=60, tries=10, backoff=2, max_delay=6000)
+@retry(delay=60, tries=5, backoff=2, max_delay=600)
 def extract_model_info(url):
     """Find the model information."""
+    try:
+        return _do_extract_model_info(url)
+    except Exception as e:
+        print(f"Got exception {e}")
+        raise e
+
+def _do_extract_model_info(url):
     print(f"Fetching model {url}")
     info = {}
     info["friendly_url"] = url
@@ -51,7 +58,7 @@ def extract_model_info(url):
     model_data = json.loads(model_data_req.text)
     dls = model_data["downloads"]
     file_url = None
-    description_element = soup.find("div", {"id": "edanDetails"})
+    description_element = soup.find("div", {"id": "edanDetails"}) or soup.find("div", {"id": "edanWrapper"})
     description_text = description_element.text
     for r in dls:
         # Select the max resolution and 
@@ -79,9 +86,8 @@ with open('rejects', 'w') as rejects:
             print(f"Up to candidate {c} on page {page}")
             new_links = list(filter(is_3d_model, links_for_page(page)))
             for link in new_links:
-                time.sleep(1)
                 try:
-                    model = extract_model_info(link)
+                    model = _do_extract_model_info(link)
                     candidate_writer.writerow(model)
                 except Exception as e:
                     print(f"Had error {e} on {link}")
