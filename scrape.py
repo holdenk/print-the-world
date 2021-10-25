@@ -80,7 +80,7 @@ c = 0
 with open('rejects', 'w') as rejects:
     with open('candidates.csv', 'w') as outfile:
         fieldnames = ['file_url', 'friendly_url', 'title', 'description']
-        candidate_writer = csv.DictWriter(outfile, fieldnames = fieldnames)
+        candidate_writer = csv.DictWriter(outfile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
         candidate_writer.writeheader()
         while no_repeats:
             print(f"Up to candidate {c} on page {page}")

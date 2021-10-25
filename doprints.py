@@ -44,7 +44,11 @@ class Bot(commands.Bot):
 
     async def fetching(self, url: str, desc: str):
         await self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
-        await self.connected_channels[0].send(f'The description for this item is {desc}.')
+        await self.connected_channels[0].send(f'The description for this item is:')
+        c = 0
+        while (c == 0 or c < len(desc)-400):
+            await self.connected_channels[0].send(desc[c:c+400])            
+            c += 400
 
 bot = Bot()
 bot_thread = threading.Thread(target=bot.run)
@@ -114,16 +118,14 @@ except:
     pass
 
 with open('candidates.csv', newline='') as infile:
-    dialect = csv.Sniffer().sniff(infile.read(1024))
-    infile.seek(0)
-    candidates = csv.DictReader(infile, dialect=dialect)
+    candidates = csv.DictReader(infile, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
     # Write out the header if the done file doesn't exist yet.
     try:
         open('done.csv')
     except:
         with open('done.csv', "w") as donefile:
             fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'id', 'recording_file']
-            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
+            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
             done_writer.writeheader()
         
     with open('done.csv', "a") as donefile:
@@ -131,7 +133,7 @@ with open('candidates.csv', newline='') as infile:
         with open("count", "w") as countout:
             countout.write(str(count))
             fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'recording_file']
-            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect)
+            done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, dialect=dialect, quoting=csv.QUOTE_NONNUMERIC)
             for candidate in candidates:
                 if plz_stop:
                     break
@@ -143,7 +145,7 @@ with open('candidates.csv', newline='') as infile:
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
                         path_to_zip_file = f"{temp_dir}/a.zip"
-                        asyncio.run(bot.fetching(candidate['file_url'], candidate['description'][0:400]))
+                        asyncio.run(bot.fetching(candidate['file_url'], candidate['description']))
                         subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
                         with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
                             zip_ref.extractall(temp_dir)
