@@ -57,6 +57,9 @@ bot_thread.start()
 # Register a signal handler for a gentle shutdown option
 def handler(signum, frame):
     print('Signal handler called with signal', signum)
+    if plz_stop:
+        # Multiple ctrl-c exit now
+        sys.exit(1)
     plz_stop = True
     return True
 
