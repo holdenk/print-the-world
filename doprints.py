@@ -224,5 +224,4 @@ with open('candidates.csv', newline='') as infile:
                 donefile.flush()
 
 
-bot_thread.stop()
 sys.exit(0)
