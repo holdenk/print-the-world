@@ -17,6 +17,7 @@ import time
 import my_settings
 
 
+global plz_stop
 plz_stop = False
 printing = "Loading..."
 
@@ -56,6 +57,7 @@ bot_thread.start()
 
 # Register a signal handler for a gentle shutdown option
 def handler(signum, frame):
+    global plz_stop
     print('Signal handler called with signal', signum)
     if plz_stop:
         # Multiple ctrl-c exit now
