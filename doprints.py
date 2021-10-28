@@ -166,7 +166,8 @@ with open('candidates.csv', newline='') as infile:
                             if ext == "zip" or ext == "ZIP":
                                 with zipfile.ZipFile(path_to_file, 'r') as zip_ref:
                                     zip_ref.extractall(temp_dir)
-                        except Exception:
+                        except Exception as e:
+                            print(f"Error {e} handling {candidate}")
                             continue
                         for path in Path(temp_dir).rglob('*'):
                             conv_process = subprocess.run(["python3", "conv.py", path])
