@@ -109,7 +109,7 @@
         "outputShortPoly": 50.0,
         "outputMinSpeed": 5.0,
         "outputCoastDist": 0.1,
-        "outputWipeDistance": 0,
+        "outputWipeDistance": 4,
         "outputLayerRetract": true,
         "detectThinWalls": true,
         "zHopDistance": 0,
