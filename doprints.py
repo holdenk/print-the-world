@@ -5,6 +5,7 @@ import asyncio
 import csv
 import tempfile
 import os
+import sys
 import subprocess
 from obswebsocket import obsws, requests, events
 import zipfile
@@ -43,6 +44,15 @@ class Bot(commands.Bot):
     async def update_printing(self, printing: str):
         await self.connected_channels[0].send(f'Now printing {printing}')
 
+    async def update_status(self, status):
+        from datetime import datetime
+        from datetime import timedelta
+        last_update = datetime.now()
+        for l in status:
+            if datetime.now() - last_update > timedelta(minutes=5):
+                last_update = datetime.now()
+                await self.connected_channels[0].send(f'Print status {l}')
+
     async def fetching(self, url: str, desc: str):
         await self.connected_channels[0].send(f'Now fetch URL {url} for printing...')
         await self.connected_channels[0].send(f'The description for this item is:')
@@ -60,7 +70,6 @@ def handler(signum, frame):
     global plz_stop
     print('Signal handler called with signal', signum)
     if plz_stop:
-        import sys
         # Multiple ctrl-c exit now
         sys.exit(1)
     plz_stop = True
@@ -180,7 +189,10 @@ with open('candidates.csv', newline='') as infile:
                             gcode = f"{path}.gcode"
                             printing = f"Printing {candidate['title']} file {gcode} from {candidate['friendly_url']}"
                             asyncio.run(bot.update_printing(printing))
-                            print_proc = subprocess.run(["printcore", "-s", "/dev/ttyUSB0", gcode])
+                            print_proc = subprocess.popen(["printcore", "-s", "/dev/ttyUSB0", gcode], stdout=PIPE)
+                            outs, errs = print_proc.communicate()
+                            asyncio.run(bot.update_status(outs))
+                            print_proc.poll()
                             returncode = print_proc.returncode
                             if (returncode == 0):
                                 files_printed = files_printed + 1
@@ -209,6 +221,7 @@ with open('candidates.csv', newline='') as infile:
                     "description": candidate['description'],
                     "id": count,
                     "recording_file": recording_file})
+                donefile.flush()
 
 
 bot_thread.stop()
