@@ -6,7 +6,6 @@ import csv
 import time
 from retry import retry
 
-
 def extract_links(url):
     links = []
     f = requests.get(url)
@@ -81,13 +80,24 @@ page = 1
 no_repeats = True
 c = 0
 
-with open('rejects', 'w') as rejects:
-    with open('candidates.csv', 'w') as outfile:
+try:
+    with open('candidates.csv', 'r') as infile:
+        with open('page', 'r') as pagefile:
+            c = int(next(pagefile))
+except Exception:
+    with open('candidates.csv', 'a') as outfile:
         fieldnames = ['file_url', 'friendly_url', 'title', 'description']
         candidate_writer = csv.DictWriter(outfile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
         candidate_writer.writeheader()
+
+with open('rejects', 'a') as rejects:
+    with open('candidates.csv', 'a') as outfile:
+        fieldnames = ['file_url', 'friendly_url', 'title', 'description']
+        candidate_writer = csv.DictWriter(outfile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC, escapechar='\\')
         while no_repeats:
             print(f"Up to candidate {c} on page {page}")
+            with open("page", "w") as page:
+                page.write(f"{page}")
             new_links = list(filter(is_3d_model, links_for_page(page)))
             for link in new_links:
                 try:
