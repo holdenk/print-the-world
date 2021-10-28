@@ -60,6 +60,7 @@ def handler(signum, frame):
     global plz_stop
     print('Signal handler called with signal', signum)
     if plz_stop:
+        import sys
         # Multiple ctrl-c exit now
         sys.exit(1)
     plz_stop = True
@@ -147,11 +148,17 @@ with open('candidates.csv', newline='') as infile:
                 files_printed = 0
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
-                        path_to_zip_file = f"{temp_dir}/a.zip"
-                        asyncio.run(bot.fetching(candidate['file_url'], candidate['description']))
-                        subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
-                        with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
-                            zip_ref.extractall(temp_dir)
+                        # Skip any things we can't download it's probably transient.
+                        try:
+                            ext = candidate['file_url'].split(".")[-1]
+                            path_to_file = f"{temp_dir}/a.{ext}"
+                            asyncio.run(bot.fetching(candidate['file_url'], candidate['description']))
+                            subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
+                            if ext == "zip" or ext == "ZIP":
+                                with zipfile.ZipFile(path_to_file, 'r') as zip_ref:
+                                    zip_ref.extractall(temp_dir)
+                        except Exception:
+                            continue
                         for path in Path(temp_dir).rglob('*'):
                             conv_process = subprocess.run(["python3", "conv.py", path])
                             returncode = conv_process.returncode
@@ -177,6 +184,8 @@ with open('candidates.csv', newline='') as infile:
                             returncode = print_proc.returncode
                             if (returncode == 0):
                                 files_printed = files_printed + 1
+                except Exception:
+                    pass
                 finally:
                     pass
 

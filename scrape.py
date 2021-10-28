@@ -62,8 +62,12 @@ def _do_extract_model_info(url):
     description_text = description_element.text
     for r in dls:
         # Select the max resolution and 
-        if file_url is None or ("Full" in r["label"] and not "combined" in file_url):
+        if file_url is None:
             file_url = r["url"]
+         if ("Full" in r["label"] and not "combined" in file_url):
+             # Prefer zipped files
+             if "zip" in r["url"] or zip not in file_url:
+                 file_url = r["url"]
     return {"title": title, "file_url": file_url, "description": description_text, "friendly_url": f"{base}{url}"}
 
 def can_slice(url):
