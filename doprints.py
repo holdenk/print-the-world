@@ -148,6 +148,7 @@ with open('candidates.csv', newline='') as infile:
             fieldnames = ['file_url', 'friendly_url', 'title', 'description', 'recording_file']
             done_writer = csv.DictWriter(donefile, fieldnames = fieldnames, quoting=csv.QUOTE_NONNUMERIC)
             for candidate in candidates:
+                print(f"Handling candidate {candidate}")
                 if plz_stop:
                     break
                 if candidate["file_url"] in finished:
@@ -197,24 +198,25 @@ with open('candidates.csv', newline='') as infile:
                             returncode = print_proc.returncode
                             if (returncode == 0):
                                 files_printed = files_printed + 1
-                except Exception:
+                except Exception as e:
+                    print(f"Error {e} printing candidate {candidate}")
                     pass
                 finally:
                     pass
 
-            # Stop the recording
-            obs_client.call(requests.StopRecording())
+                # Stop the recording
+                obs_client.call(requests.StopRecording())
 
-            # Wait for the recording_file to become present
-            while True:
-                import time
-                time.sleep(10)
-                print(f"Waiting for recording file to exist {recording_file}....")
-                if recording_file is not None:
-                    print(f"Huzzah recorded as {recording_file}")
-                    break
-                else:
-                    print(f"No recording in {recording_file}")
+                # Wait for the recording_file to become present
+                while True:
+                    import time
+                    time.sleep(10)
+                    print(f"Waiting for recording file to exist {recording_file}....")
+                    if recording_file is not None:
+                        print(f"Huzzah recorded as {recording_file}")
+                        break
+                    else:
+                        print(f"No recording in {recording_file}")
                 done_writer.writerow({
                     "file_url": candidate['file_url'],
                     "friendly_url": candidate['friendly_url'],
