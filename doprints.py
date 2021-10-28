@@ -191,7 +191,7 @@ with open('candidates.csv', newline='') as infile:
                             gcode = f"{path}.gcode"
                             printing = f"Printing {candidate['title']} file {gcode} from {candidate['friendly_url']}"
                             asyncio.run(bot.update_printing(printing))
-                            print_proc = subprocess.Popen(["printcore", "-s", "/dev/ttyUSB0", gcode], stdout=PIPE)
+                            print_proc = subprocess.Popen(["printcore", "-s", "/dev/ttyUSB0", gcode], stdout=subprocess.PIPE)
                             outs, errs = print_proc.communicate()
                             asyncio.run(bot.update_status(outs))
                             print_proc.poll()
