@@ -163,7 +163,7 @@ with open('candidates.csv', newline='') as infile:
                             ext = candidate['file_url'].split(".")[-1]
                             path_to_file = f"{temp_dir}/a.{ext}"
                             asyncio.run(bot.fetching(candidate['file_url'], candidate['description']))
-                            subprocess.run(["axel", candidate['file_url'], '-o', path_to_zip_file])
+                            subprocess.run(["axel", candidate['file_url'], '-o', path_to_file])
                             if ext == "zip" or ext == "ZIP":
                                 with zipfile.ZipFile(path_to_file, 'r') as zip_ref:
                                     zip_ref.extractall(temp_dir)
