@@ -108,7 +108,7 @@
         "outputRetractDwell": 0,
         "outputShortPoly": 50.0,
         "outputMinSpeed": 5.0,
-        "outputCoastDist": 0.1,
+        "outputCoastDist": 0.05,
         "outputWipeDistance": 4,
         "outputLayerRetract": true,
         "detectThinWalls": true,
