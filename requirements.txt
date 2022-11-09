@@ -3,3 +3,5 @@ bs4
 twitchio
 obs-websocket-py
 numpy
+retry
+python-thingiverse
